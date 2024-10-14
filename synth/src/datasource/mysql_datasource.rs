@@ -10,7 +10,6 @@ use rust_decimal::Decimal;
 use sqlx::mysql::{MySqlColumn, MySqlPoolOptions, MySqlRow};
 use sqlx::{Column, MySql, Pool, Row, TypeInfo};
 use std::collections::BTreeMap;
-use std::time::Duration;
 use synth_core::schema::number_content::{F64, I16, I32, I64, I8, U64};
 use synth_core::schema::{
     ChronoValueType, DateTimeContent, NumberContent, RangeStep, RegexContent, StringContent,
@@ -28,7 +27,6 @@ pub struct MySqlConnectParams {
     pub(crate) concurrency: usize,
 }
 
-#[derive(Clone)]
 pub struct MySqlDataSource {
     pool: Pool<MySql>,
     concurrency: usize,
@@ -42,7 +40,6 @@ impl DataSource for MySqlDataSource {
         task::block_on(async {
             let pool = MySqlPoolOptions::new()
                 .max_connections(connect_params.concurrency.try_into().unwrap())
-                .acquire_timeout(Duration::from_secs(600))
                 .connect(connect_params.uri.as_str())
                 .await?;
 

@@ -159,7 +159,6 @@ impl ExportStrategy for MongoExportStrategy {
         info!("Connecting to database at {} ...", &self.uri_string);
 
         let mut client = Client::with_options(client_options)?;
-        // let mut client = Client::with_uri_str(&self.uri_string)?;
 
         match sample {
             SamplerOutput::Collection(name, value) => {

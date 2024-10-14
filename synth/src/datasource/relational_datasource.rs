@@ -226,8 +226,6 @@ where
         collection_name
     );
 
-    let mut num_jobs = 0;
-
     let semaphore = Arc::new(Semaphore::new(max_concurrency));
     for rows in collection_chunks {
         let permit = semaphore.clone().acquire_arc().await;
@@ -260,15 +258,10 @@ where
             drop(permit);
             result
         });
-        num_jobs += 1;
 
         futures.push(future);
     }
 
-    info!(
-        "Waiting for {} jobs for collection {}...",
-        num_jobs, collection_name
-    );
     let results = join_all(futures).await;
 
     if let Err(e) = results.into_iter().bcollect::<Vec<_>>() {
